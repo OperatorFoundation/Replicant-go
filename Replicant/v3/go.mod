@@ -1,4 +1,4 @@
-module github.com/OperatorFoundation/shapeshifter-transports/transports/Replicant/v3
+module github.com/OperatorFoundation/Replicant-go/Replicant/v3
 
 go 1.12
 

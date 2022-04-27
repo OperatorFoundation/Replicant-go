@@ -5,11 +5,8 @@ github.com/OperatorFoundation/monolith-go/monolith v1.0.8/go.mod h1:ozJYOnSQVcTB
 github.com/OperatorFoundation/monolith-go/monolith v1.0.9 h1:N2LiMgXRPMjcFU6Q7uDmQthAgSDGWdJrS8VmNOwtTY0=
 github.com/OperatorFoundation/monolith-go/monolith v1.0.9/go.mod h1:DlHqsy7HyaRaG9qkF19Rbsw37ro3NuLt1gnZQH+SWY0=
 github.com/OperatorFoundation/obfs4 v1.0.0/go.mod h1:6apgxOLYwyvbpzujpFHWu6Jlc+mjn1aFK7WvNijIVWc=
-github.com/OperatorFoundation/shapeshifter-ipc/v2 v2.0.0/go.mod h1:gb/QiZH0QDXLSQ9PskyJ2oTflB7tsP4AYc8y+FppvB0=
 github.com/OperatorFoundation/shapeshifter-ipc/v3 v3.0.0 h1:zeWIkAC4NH9X49wLg75yKw4g5p3Gq8ZYTWxbXGeinCs=
 github.com/OperatorFoundation/shapeshifter-ipc/v3 v3.0.0/go.mod h1:N/8omY/NE0qGcbNhadLjgxmfwo3/Vg8XkOAnhpZ9BIM=
-github.com/OperatorFoundation/shapeshifter-transports/transports/Replicant/v2 v2.2.15/go.mod h1:2Rnz5lGFpr1YiHXsuHbk9I6MQzCVzmRhJgdDrWS0ew4=
-github.com/OperatorFoundation/shapeshifter-transports/transports/Replicant/v2 v2.2.20/go.mod h1:C93ByAIy5FhluhQJ2KBnU5JhahtGjNlIPzXO6VnHDlg=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/dchest/siphash v1.2.1/go.mod h1:q+IRvb2gOSrUnYoPqHiyHXS0FOBBOdl6tONBlVnOnt4=
 github.com/deckarep/golang-set v1.7.1 h1:SCQV0S6gTtp6itiFrTqI+pfmJ4LN85S1YzhDf9rTHJQ=

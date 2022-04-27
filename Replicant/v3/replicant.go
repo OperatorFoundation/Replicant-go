@@ -30,8 +30,8 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/OperatorFoundation/shapeshifter-transports/transports/Replicant/v3/polish"
-	"github.com/OperatorFoundation/shapeshifter-transports/transports/Replicant/v3/toneburst"
+	"github.com/OperatorFoundation/Replicant-go/Replicant/v3/polish"
+	"github.com/OperatorFoundation/Replicant-go/Replicant/v3/toneburst"
 )
 
 type ConnectionState struct {
@@ -40,8 +40,8 @@ type ConnectionState struct {
 }
 
 type Connection struct {
-	state *ConnectionState
-	conn net.Conn
+	state         *ConnectionState
+	conn          net.Conn
 	receiveBuffer *bytes.Buffer
 }
 
@@ -51,8 +51,8 @@ type Server struct {
 }
 
 type replicantTransportListener struct {
-	listener  *net.TCPListener
-	config ServerConfig
+	listener *net.TCPListener
+	config   ServerConfig
 }
 
 func newReplicantTransportListener(listener *net.TCPListener, config ServerConfig) *replicantTransportListener {
@@ -143,7 +143,6 @@ func NewReplicantClientConnectionState(config ClientConfig) (*ConnectionState, e
 			return nil, polishError
 		}
 	}
-
 
 	return &ConnectionState{tb, p}, nil
 }

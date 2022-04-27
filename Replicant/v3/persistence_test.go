@@ -2,8 +2,8 @@ package replicant
 
 import (
 	"encoding/json"
-	"github.com/OperatorFoundation/shapeshifter-transports/transports/Replicant/v3/polish"
-	"github.com/OperatorFoundation/shapeshifter-transports/transports/Replicant/v3/toneburst"
+	"github.com/OperatorFoundation/Replicant-go/Replicant/v3/polish"
+	"github.com/OperatorFoundation/Replicant-go/Replicant/v3/toneburst"
 	"io/ioutil"
 	"testing"
 )
@@ -129,7 +129,6 @@ func TestDecodeServerConfig(t *testing.T) {
 type ReplicantJSONConfig struct {
 	Config string `json:"config"`
 }
-
 
 func TestSaveServerConfigPolish(t *testing.T) {
 

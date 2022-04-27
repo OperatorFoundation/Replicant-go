@@ -26,8 +26,8 @@ package replicant
 
 import (
 	"encoding/json"
-	"github.com/OperatorFoundation/shapeshifter-transports/transports/Replicant/v3/polish"
-	"github.com/OperatorFoundation/shapeshifter-transports/transports/Replicant/v3/toneburst"
+	"github.com/OperatorFoundation/Replicant-go/Replicant/v3/polish"
+	"github.com/OperatorFoundation/Replicant-go/Replicant/v3/toneburst"
 )
 
 type ClientConfig struct {
@@ -59,8 +59,8 @@ func (config ServerConfig) Marshal() (string, error) {
 		return "", configStringError
 	}
 
-	innerConfig := ServerJSONInnerConfig{Config:configString}
-	outerConfig := ServerJSONOuterConfig{Replicant:innerConfig}
+	innerConfig := ServerJSONInnerConfig{Config: configString}
+	outerConfig := ServerJSONOuterConfig{Replicant: innerConfig}
 
 	configBytes, marshalError := json.Marshal(outerConfig)
 	if marshalError != nil {
@@ -77,7 +77,7 @@ func (config ClientConfig) Marshal() (string, error) {
 		return "", configStringError
 	}
 
-	clientConfig := ClientJSONConfig{Config:configString}
+	clientConfig := ClientJSONConfig{Config: configString}
 
 	configBytes, marshalError := json.Marshal(clientConfig)
 	if marshalError != nil {

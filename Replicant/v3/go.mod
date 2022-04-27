@@ -1,12 +1,18 @@
 module github.com/OperatorFoundation/Replicant-go/Replicant/v3
 
-go 1.12
+go 1.17
 
 require (
-	github.com/OperatorFoundation/monolith-go/monolith v1.0.4
-	github.com/OperatorFoundation/shapeshifter-ipc/v2 v2.0.0
+	github.com/OperatorFoundation/monolith-go/monolith v1.0.9
+	github.com/OperatorFoundation/shapeshifter-ipc/v3 v3.0.0
 	github.com/kataras/golog v0.0.18
 	github.com/opentracing/opentracing-go v1.1.0
-	golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2
-	golang.org/x/net v0.0.0-20200202094626-16171245cfb2
+	golang.org/x/crypto v0.0.0-20200221231518-2aa609cf4a9d
+	golang.org/x/net v0.0.0-20200226121028-0de0cce0169b
+)
+
+require (
+	github.com/deckarep/golang-set v1.7.1 // indirect
+	github.com/kataras/pio v0.0.8 // indirect
+	golang.org/x/sys v0.0.0-20190412213103-97732733099d // indirect
 )

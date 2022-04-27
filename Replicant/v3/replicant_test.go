@@ -2,9 +2,9 @@ package replicant
 
 import (
 	"bytes"
+	"github.com/OperatorFoundation/Replicant-go/Replicant/v3/polish"
+	"github.com/OperatorFoundation/Replicant-go/Replicant/v3/toneburst"
 	"github.com/OperatorFoundation/monolith-go/monolith"
-	"github.com/OperatorFoundation/shapeshifter-transports/transports/Replicant/v3/polish"
-	"github.com/OperatorFoundation/shapeshifter-transports/transports/Replicant/v3/toneburst"
 	"github.com/kataras/golog"
 	"golang.org/x/net/proxy"
 	"io/ioutil"

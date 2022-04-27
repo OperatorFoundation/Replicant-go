@@ -3,7 +3,7 @@ module github.com/OperatorFoundation/Replicant-go/Replicant/v3
 go 1.17
 
 require (
-	github.com/OperatorFoundation/monolith-go/monolith v1.0.9
+	github.com/OperatorFoundation/monolith-go/monolith v1.0.10
 	github.com/OperatorFoundation/shapeshifter-ipc/v3 v3.0.0
 	github.com/kataras/golog v0.0.18
 	github.com/opentracing/opentracing-go v1.1.0

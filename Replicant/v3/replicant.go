@@ -59,36 +59,33 @@ func newReplicantTransportListener(listener *net.TCPListener, config ServerConfi
 	return &replicantTransportListener{listener: listener, config: config}
 }
 
-func NewClientConnection(conn net.Conn, config ClientConfig) (*Connection, error) {
+func NewClientConnection(conn net.Conn, config ClientConfig) (net.Conn, error) {
 	// Initialize a client connection.
-	var buffer bytes.Buffer
 
 	state, clientError := NewReplicantClientConnectionState(config)
 	if clientError != nil {
 		return nil, clientError
 	}
-	rconn := &Connection{state, conn, &buffer}
 
 	if state.toneburst != nil {
 		err := state.toneburst.Perform(conn)
 		if err != nil {
 			return nil, err
 		}
-
 	}
 	if state.polish != nil {
-		err := state.polish.Handshake(conn)
+		rconn, err := state.polish.Handshake(conn)
 		if err != nil {
 			return nil, err
 		}
+		return rconn, nil
 	}
 
-	return rconn, nil
+	return conn, nil
 }
 
-func NewServerConnection(conn net.Conn, config ServerConfig) (*Connection, error) {
+func NewServerConnection(conn net.Conn, config ServerConfig) (net.Conn, error) {
 	// Initialize a client connection.
-	var buffer bytes.Buffer
 	var polishServer polish.Server
 	var serverError error
 
@@ -103,7 +100,6 @@ func NewServerConnection(conn net.Conn, config ServerConfig) (*Connection, error
 	if connError != nil {
 		return nil, connError
 	}
-	rconn := &Connection{state, conn, &buffer}
 
 	if state.toneburst != nil {
 		err := state.toneburst.Perform(conn)
@@ -114,14 +110,15 @@ func NewServerConnection(conn net.Conn, config ServerConfig) (*Connection, error
 	}
 
 	if state.polish != nil {
-		err := state.polish.Handshake(conn)
+		rconn, err := state.polish.Handshake(conn)
 		if err != nil {
 			fmt.Println("> Polish handshake failed", err.Error())
 			return nil, err
 		}
+		return rconn, nil
 	}
 
-	return rconn, nil
+	return conn, nil
 }
 
 func NewReplicantClientConnectionState(config ClientConfig) (*ConnectionState, error) {

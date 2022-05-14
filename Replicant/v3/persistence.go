@@ -38,8 +38,8 @@ func InitializeGobRegistry() {
 
 	gob.Register(toneburst.MonotoneConfig{})
 	gob.Register(toneburst.WhalesongConfig{})
-	gob.Register(polish.SilverPolishClientConfig{})
-	gob.Register(polish.SilverPolishServerConfig{})
+	gob.Register(polish.DarkStarPolishClientConfig{})
+	gob.Register(polish.DarkStarPolishServerConfig{})
 }
 
 func (config ClientConfig) Encode() (string, error) {

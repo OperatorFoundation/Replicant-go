@@ -27,6 +27,7 @@ package replicant
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"net"
 
@@ -92,12 +93,14 @@ func NewServerConnection(conn net.Conn, config ServerConfig) (net.Conn, error) {
 	if config.Polish != nil {
 		polishServer, serverError = config.Polish.Construct()
 		if serverError != nil {
+			fmt.Printf("error: %s", serverError)
 			return nil, serverError
 		}
 	}
 
 	state, connError := NewReplicantServerConnectionState(config, polishServer, conn)
 	if connError != nil {
+		fmt.Printf("error: %s", connError)
 		return nil, connError
 	}
 
@@ -114,6 +117,9 @@ func NewServerConnection(conn net.Conn, config ServerConfig) (net.Conn, error) {
 		if err != nil {
 			fmt.Println("> Polish handshake failed", err.Error())
 			return nil, err
+		}
+		if rconn == nil {
+			return nil, errors.New("handshake returned nil")
 		}
 		return rconn, nil
 	}

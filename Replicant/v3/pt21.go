@@ -25,8 +25,10 @@
 package replicant
 
 import (
-	pt "github.com/OperatorFoundation/shapeshifter-ipc/v3"
+	"errors"
 	"net"
+
+	pt "github.com/OperatorFoundation/shapeshifter-ipc/v3"
 )
 
 // Create outgoing transport connection
@@ -74,10 +76,21 @@ func (listener *replicantTransportListener) Accept() (net.Conn, error) {
 	if err != nil {
 		return nil, err
 	}
+	if conn == nil {
+		return nil, errors.New("tcp connection is nil")
+	}
 
 	config := listener.config
 
-	return NewServerConnection(conn, config)
+	newServerConn, serverConnError := NewServerConnection(conn, config)
+	if serverConnError != nil {
+		return nil, serverConnError
+	}
+	if newServerConn == nil {
+		return nil, errors.New("newServerConn is nil")
+	}
+
+	return newServerConn, nil
 }
 
 // Close closes the transport listener.

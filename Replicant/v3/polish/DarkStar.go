@@ -6,9 +6,11 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"errors"
+	"fmt"
+	"net"
+
 	"github.com/OperatorFoundation/go-shadowsocks2/darkstar"
 	"github.com/aead/ecdh"
-	"net"
 )
 
 type DarkStarPolishServerConfig struct {
@@ -46,7 +48,10 @@ func (clientConfig DarkStarPolishClientConfig) Construct() (Connection, error) {
 }
 
 func (server DarkStarPolishServer) NewConnection(conn net.Conn) Connection {
-	serverStreamConn := server.darkStarServer.StreamConn(conn)
+	serverStreamConn, connError := server.darkStarServer.StreamConn(conn)
+	if connError != nil {
+		return nil
+	}
 	return &DarkStarPolishServerConnection{
 		darkStarServer: server.darkStarServer,
 		conn:           serverStreamConn,
@@ -54,15 +59,32 @@ func (server DarkStarPolishServer) NewConnection(conn net.Conn) Connection {
 }
 
 func (serverConn *DarkStarPolishServerConnection) Handshake(conn net.Conn) (net.Conn, error) {
-	return serverConn.darkStarServer.StreamConn(conn), nil
+	streamConn, connError := serverConn.darkStarServer.StreamConn(conn)
+	if connError != nil {
+		return nil, connError
+	}
+	if streamConn == nil {
+		return nil, errors.New("streamConn in server handshake returned nil")
+	}
+	return streamConn, nil
 }
 
 func (clientConn *DarkStarPolishClientConnection) Handshake(conn net.Conn) (net.Conn, error) {
-	return clientConn.darkStarClient.StreamConn(conn), nil
+	streamConn, connError := clientConn.darkStarClient.StreamConn(conn)
+	if connError != nil {
+		return nil, connError
+	}
+	if streamConn == nil {
+		return nil, errors.New("streamConn in client handshake returned nil")
+	}
+	return streamConn, nil
 }
 
 func NewDarkStarPolishClientConfigFromPrivate(serverPrivateKey crypto.PrivateKey, host string, port int) (*DarkStarPolishClientConfig, error) {
-	serverPublicKey := crypto.PublicKey(serverPrivateKey)
+	keyExchange := ecdh.Generic(elliptic.P256())
+	serverPublicKey := keyExchange.PublicKey(serverPrivateKey)
+	fmt.Print("server publicKey: ")
+	fmt.Println(serverPublicKey)
 	publicKeyBytes, keyError := darkstar.PublicKeyToBytes(serverPublicKey)
 	if keyError != nil {
 		return nil, keyError
@@ -85,12 +107,12 @@ func NewDarkStarPolishClientConfig(serverPublicKey []byte, host string, port int
 
 func NewDarkStarPolishServerConfig(host string, port int) (*DarkStarPolishServerConfig, error) {
 	keyExchange := ecdh.Generic(elliptic.P256())
-	clientEphemeralPrivateKey, _, keyError := keyExchange.GenerateKey(rand.Reader)
+	serverEphemeralPrivateKey, _, keyError := keyExchange.GenerateKey(rand.Reader)
 	if keyError != nil {
 		return nil, keyError
 	}
 
-	privateKeyBytes, ok := clientEphemeralPrivateKey.([]byte)
+	privateKeyBytes, ok := serverEphemeralPrivateKey.([]byte)
 	if !ok {
 		return nil, errors.New("could not convert private key to bytes")
 	}

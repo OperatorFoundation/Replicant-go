@@ -8,23 +8,8 @@ import (
 	"github.com/OperatorFoundation/Replicant-go/Replicant/v3/polish"
 )
 
-//func TestNewDarkStarServerConfig(t *testing.T) {
-//	_, configError := polish.NewDarkStarPolishServerConfig("127.0.0.1", 1234)
-//	if configError != nil {
-//		t.Fail()
-//		return
-//	}
-//}
-
-func TestNewDarkStarClientConfig(t *testing.T) {
+func TestDarkStarPolish(t *testing.T) {
 	addr := "127.0.0.1:1234"
-
-	// polishServerConfig, serverConfigError := polish.NewDarkStarPolishServerConfig("127.0.0.1", 1234)
-	// if serverConfigError != nil {
-	// 	fmt.Println(serverConfigError)
-	// 	t.Fail()
-	// 	return
-	// }
 
 	serverPrivateKeyBytes, keyError := hex.DecodeString("dd5e9e88d13e66017eb2087b128c1009539d446208f86173e30409a898ada148")
 	if keyError != nil {
@@ -38,13 +23,6 @@ func TestNewDarkStarClientConfig(t *testing.T) {
 		Port:             1234,
 		ServerPrivateKey: serverPrivateKeyBytes,
 	}
-
-	// polishClientConfig, clientConfigError := polish.NewDarkStarPolishClientConfigFromPrivate(polishServerConfig.ServerPrivateKey, "127.0.0.1", 1234)
-	// if clientConfigError != nil {
-	// 	fmt.Println(clientConfigError)
-	// 	t.Fail()
-	// 	return
-	// }
 
 	serverPublicKeyBytes, keyError := hex.DecodeString("d089c225ef8cda8d477a586f062b31a756270124d94944e458edf1a9e1e41ed6")
 	if keyError != nil {
@@ -85,20 +63,24 @@ func TestNewDarkStarClientConfig(t *testing.T) {
 		}
 
 		buffer := make([]byte, 4)
-		_, readError := serverConn.Read(buffer)
+		numBytesRead, readError := serverConn.Read(buffer)
 		if readError != nil {
 			fmt.Println(readError)
 			t.Fail()
 			return
 		}
+		fmt.Printf("number of bytes read: %d\n", numBytesRead)
 
 		// Send a response back to person contacting us.
-		_, writeError := serverConn.Write([]byte("Message received."))
+		numBytesWritten, writeError := serverConn.Write([]byte("Message received."))
 		if writeError != nil {
 			fmt.Println(writeError)
 			t.Fail()
 			return
 		}
+		fmt.Printf("number of bytes written: %d\n", numBytesWritten)
+
+
 
 		_ = listener.Close()
 	}()

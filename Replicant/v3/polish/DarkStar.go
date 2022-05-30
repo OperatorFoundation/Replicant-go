@@ -36,7 +36,6 @@ type DarkStarPolishServerConnection struct {
 
 type DarkStarPolishClientConnection struct {
 	darkStarClient darkstar.DarkStarClient
-	chunkSize      int
 }
 
 func (serverConfig DarkStarPolishServerConfig) Construct() (Server, error) {
@@ -48,25 +47,29 @@ func (clientConfig DarkStarPolishClientConfig) Construct() (Connection, error) {
 }
 
 func (server DarkStarPolishServer) NewConnection(conn net.Conn) Connection {
+	// this does the DarkStar handshake
 	serverStreamConn, connError := server.darkStarServer.StreamConn(conn)
 	if connError != nil {
 		return nil
 	}
+
 	return &DarkStarPolishServerConnection{
 		darkStarServer: server.darkStarServer,
 		conn:           serverStreamConn,
 	}
 }
 
+// TODO: handshake behavior is already performed in DarkStarPolishServer.darkStarServer.StreamConn()
 func (serverConn *DarkStarPolishServerConnection) Handshake(conn net.Conn) (net.Conn, error) {
-	streamConn, connError := serverConn.darkStarServer.StreamConn(conn)
-	if connError != nil {
-		return nil, connError
-	}
-	if streamConn == nil {
-		return nil, errors.New("streamConn in server handshake returned nil")
-	}
-	return streamConn, nil
+	// streamConn, connError := serverConn.darkStarServer.StreamConn(conn)
+	// if connError != nil {
+	// 	return nil, connError
+	// }
+	// if streamConn == nil {
+	// 	return nil, errors.New("streamConn in server handshake returned nil")
+	// }
+	// return streamConn, nil
+	return conn, nil
 }
 
 func (clientConn *DarkStarPolishClientConnection) Handshake(conn net.Conn) (net.Conn, error) {

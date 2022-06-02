@@ -48,28 +48,28 @@ func (clientConfig DarkStarPolishClientConfig) Construct() (Connection, error) {
 
 func (server DarkStarPolishServer) NewConnection(conn net.Conn) Connection {
 	// this does the DarkStar handshake
-	serverStreamConn, connError := server.darkStarServer.StreamConn(conn)
-	if connError != nil {
-		return nil
-	}
+	// serverStreamConn, connError := server.darkStarServer.StreamConn(conn)
+	// fmt.Printf("streamConn type: %T\n", serverStreamConn)
+	// if connError != nil {
+	// 	return nil
+	// }
 
 	return &DarkStarPolishServerConnection{
 		darkStarServer: server.darkStarServer,
-		conn:           serverStreamConn,
+		conn:           conn,
 	}
 }
 
 // TODO: handshake behavior is already performed in DarkStarPolishServer.darkStarServer.StreamConn()
 func (serverConn *DarkStarPolishServerConnection) Handshake(conn net.Conn) (net.Conn, error) {
-	// streamConn, connError := serverConn.darkStarServer.StreamConn(conn)
-	// if connError != nil {
-	// 	return nil, connError
-	// }
-	// if streamConn == nil {
-	// 	return nil, errors.New("streamConn in server handshake returned nil")
-	// }
-	// return streamConn, nil
-	return conn, nil
+	streamConn, connError := serverConn.darkStarServer.StreamConn(conn)
+	if connError != nil {
+		return nil, connError
+	}
+	if streamConn == nil {
+		return nil, errors.New("streamConn in server handshake returned nil")
+	}
+	return streamConn, nil
 }
 
 func (clientConn *DarkStarPolishClientConnection) Handshake(conn net.Conn) (net.Conn, error) {

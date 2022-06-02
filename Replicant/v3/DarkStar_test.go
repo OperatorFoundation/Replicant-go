@@ -50,6 +50,7 @@ func TestDarkStarPolish(t *testing.T) {
 	}
 
 	go func() {
+		fmt.Printf("listener type: %T\n", listener)
 		serverConn, serverConnError := listener.Accept()
 		if serverConnError != nil {
 			fmt.Println(serverConnError)
@@ -69,18 +70,17 @@ func TestDarkStarPolish(t *testing.T) {
 			t.Fail()
 			return
 		}
-		fmt.Printf("number of bytes read: %d\n", numBytesRead)
+		fmt.Printf("number of bytes read on server: %d\n", numBytesRead)
+		fmt.Printf("serverConn type: %T\n", serverConn)
 
 		// Send a response back to person contacting us.
-		numBytesWritten, writeError := serverConn.Write([]byte("Message received."))
+		numBytesWritten, writeError := serverConn.Write([]byte{0xFF, 0xFF, 0xFF, 0xFF})
 		if writeError != nil {
 			fmt.Println(writeError)
 			t.Fail()
 			return
 		}
-		fmt.Printf("number of bytes written: %d\n", numBytesWritten)
-
-
+		fmt.Printf("number of bytes written on server: %d\n", numBytesWritten)
 
 		_ = listener.Close()
 	}()
@@ -98,20 +98,23 @@ func TestDarkStarPolish(t *testing.T) {
 	}
 
 	writeBytes := []byte{0x0A, 0x11, 0xB0, 0xB1}
-	_, writeError := clientConn.Write(writeBytes)
+	bytesWritten, writeError := clientConn.Write(writeBytes)
 	if writeError != nil {
 		fmt.Println(writeError)
 		t.Fail()
 		return
 	}
+	fmt.Printf("number of bytes written on client: %d\n", bytesWritten)
 
-	readBuffer := make([]byte, 17)
-	_, readError := clientConn.Read(readBuffer)
+
+	readBuffer := make([]byte, 4)
+	bytesRead, readError := clientConn.Read(readBuffer)
 	if readError != nil {
 		fmt.Println(readError)
 		t.Fail()
 		return
 	}
+	fmt.Printf("number of bytes read on client: %d\n", bytesRead)	
 
 	_ = clientConn.Close()
 }

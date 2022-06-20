@@ -1,7 +1,7 @@
+github.com/OperatorFoundation/ghostwriter-go v1.0.5 h1:kFOsC+vrUVfpirVuQagW7599Py5ymn/z+MgDOmgchBc=
+github.com/OperatorFoundation/ghostwriter-go v1.0.5/go.mod h1:+uejzC1RRxZwngnCArqZX3d7i6ZX4Si8jNG8G6oCIKQ=
 github.com/OperatorFoundation/go-bloom v1.0.1 h1:8q/rfgfG7OvwGkmzusIuV8PlS8MvA/T0kQ2MXm9371g=
 github.com/OperatorFoundation/go-bloom v1.0.1/go.mod h1:b6bJWAnYIhwDgFIIolHyeuTYbPWAYj1Lnnwvcoa7P38=
-github.com/OperatorFoundation/go-shadowsocks2 v1.1.9 h1:YiHFBubmF9zKlgLHsyZER+4wmeo3sGs2ldtDkMGZJvs=
-github.com/OperatorFoundation/go-shadowsocks2 v1.1.9/go.mod h1:yw8jel8UNDWkJNE3wwAfEyctdCw6DI1FWBrZgcuoBfI=
 github.com/OperatorFoundation/go-shadowsocks2 v1.1.10 h1:ZnL5YFItVidxb4JQr+JNElctG7G8b8qLd23sMcELaTs=
 github.com/OperatorFoundation/go-shadowsocks2 v1.1.10/go.mod h1:yw8jel8UNDWkJNE3wwAfEyctdCw6DI1FWBrZgcuoBfI=
 github.com/OperatorFoundation/monolith-go/monolith v1.0.10 h1:mK7X57x5LliwsPmRoWgdVhMK1u+ag3LaxemsYpQ279Y=

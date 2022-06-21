@@ -54,7 +54,7 @@ func (smtp *StarburstSMTPServer) Perform(conn net.Conn) error {
 		return templateError
 	}
 
-	templateError = smtp.speakTemplate(conn, ghostwriter.Template{"250-$1 offers a warm hug of welcome\r\n250-$2\r\n250-$3\r\n250 $4\r\n"}, []ghostwriter.Detail{ghostwriter.DetailString{"mail.imc.org"}, ghostwriter.DetailString{"8BITMIME"}, ghostwriter.DetailString{"STARTTLS"}, ghostwriter.DetailString{"DSN"}})
+	templateError = smtp.speakTemplate(conn, ghostwriter.Template{"250-$1 offers a warm hug of welcome\r\n250-$2\r\n250-$3\r\n250 $4\r\n"}, []ghostwriter.Detail{ghostwriter.DetailString{"mail.imc.org"}, ghostwriter.DetailString{"8BITMIME"}, ghostwriter.DetailString{"DSN"}, ghostwriter.DetailString{"STARTTLS"}})
 	if templateError != nil {
 		return templateError
 	}
@@ -92,41 +92,12 @@ func (smtp *StarburstSMTPClient) Perform(conn net.Conn) error {
 
 	details, templateError = smtp.listenParse(
 		conn,
-		ghostwriter.Template{"250-$1 offers a warm hug of welcome\r\n250-$2\r\n250-$3\r\n250 $4\r\n"},
-		[]ghostwriter.ExtractionPattern{
-			{Expression: "^([a-zA-Z0-9.-]+) ", 
-			Type: ghostwriter.String},
-		{Expression: "^([A-Z0-9-]+)\r", 
-			Type: ghostwriter.String},
-		{Expression: "^([A-Z0-9-]+)\r", 
-			Type: ghostwriter.String},
-		{Expression: "^([A-Z0-9-]+)\r", 
-			Type: ghostwriter.String}},
+		ghostwriter.Template{"^.*250 STARTTLS\r\n$"},
+		[]ghostwriter.ExtractionPattern{},
 		253,
 		300)
 	if templateError != nil {
 		return templateError
-	}
-
-	if len(details) != 4 {
-		return errors.New("client received incorrect number of details")
-	}
-
-	var matched = false
-	for _, detail := range details {
-		switch typedDetail := detail.(type) {
-		case ghostwriter.DetailString:
-			if typedDetail.String == "STARTTLS" {
-				matched = true
-				break
-			}
-		default:
-			continue
-		}
-	}
-
-	if !matched {
-		return errors.New("did not receive STARTTLS from server")
 	}
 
 	templateError = smtp.speakString(conn, "STARTTLS\r\n")
@@ -136,7 +107,7 @@ func (smtp *StarburstSMTPClient) Perform(conn net.Conn) error {
 
 	details, templateError = smtp.listenParse(
 		conn,
-		ghostwriter.Template{"220 $1\r\n"},
+		ghostwriter.Template{"^220 .+\r\n$"},
 		[]ghostwriter.ExtractionPattern{
 			{Expression: "^([:ascii:]+)\r", 
 			Type: ghostwriter.String}},

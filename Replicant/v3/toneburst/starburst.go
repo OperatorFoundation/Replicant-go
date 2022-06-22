@@ -2,7 +2,6 @@ package toneburst
 
 import (
 	"errors"
-	"fmt"
 	"net"
 	"time"
 
@@ -73,7 +72,7 @@ func (smtp *StarburstSMTPServer) Perform(conn net.Conn) error {
 }
 
 func (smtp *StarburstSMTPClient) Perform(conn net.Conn) error {
-	details, templateError := smtp.listenParse(
+	_, templateError := smtp.listenParse(
 		conn,
 		ghostwriter.Template{"220 $1 SMTP service ready\r\n"},
 		[]ghostwriter.ExtractionPattern{
@@ -90,12 +89,12 @@ func (smtp *StarburstSMTPClient) Perform(conn net.Conn) error {
 		return templateError
 	}
 
-	details, templateError = smtp.listenParse(
+	_, templateError = smtp.listenParse(
 		conn,
-		ghostwriter.Template{"^.*250 STARTTLS\r\n$"},
-		[]ghostwriter.ExtractionPattern{},
+		ghostwriter.Template{"$1\r\n"},
+		[]ghostwriter.ExtractionPattern{{Expression: "250 (STARTTLS)", Type: ghostwriter.String}},
 		253,
-		300)
+		10)
 	if templateError != nil {
 		return templateError
 	}
@@ -105,11 +104,11 @@ func (smtp *StarburstSMTPClient) Perform(conn net.Conn) error {
 		return templateError
 	}
 
-	details, templateError = smtp.listenParse(
+	_, templateError = smtp.listenParse(
 		conn,
-		ghostwriter.Template{"^220 .+\r\n$"},
+		ghostwriter.Template{"$1\r\n"},
 		[]ghostwriter.ExtractionPattern{
-			{Expression: "^([:ascii:]+)\r", 
+			{Expression: "^(.+)\r", 
 			Type: ghostwriter.String}},
 		253,
 		10)
@@ -231,8 +230,10 @@ func (smtp *StarburstSMTP) listenParse(connection net.Conn, template ghostwriter
 	var totalBuffer = make([]byte, 0)
 
 	var byteChannel = make(chan []byte)
+	var keepGoingChannel = make(chan bool)
+
 	go func() {
-		for {
+		for <- keepGoingChannel {
 			var buffer = make([]byte, 1)
 			bytesRead, readError := connection.Read(buffer)
 			if readError != nil {
@@ -250,22 +251,19 @@ func (smtp *StarburstSMTP) listenParse(connection net.Conn, template ghostwriter
 	}()
 
 	for totalBytesRead < maxSize {
+		keepGoingChannel <- true
 		select {
 		case <-timeout:
+			keepGoingChannel <- false
 			return nil, errors.New("listenParse timeout reached")
 		case buffer, ok := <- byteChannel:
 			if !ok {
+				keepGoingChannel <- false
 				return nil, errors.New("error while trying to read")
-			}
-			if buffer[0] == 50 {
-				print("yall")
 			}
 			totalBuffer = append(totalBuffer, buffer...)
 			totalBytesRead += len(buffer)
 
-			if totalBytesRead == 83 {
-				fmt.Print("howdy")
-			}
 			bufferString := string(totalBuffer)
 			details, parseError := ghostwriter.Parse(&template, patterns, bufferString)
 			if parseError != nil {
@@ -275,6 +273,7 @@ func (smtp *StarburstSMTP) listenParse(connection net.Conn, template ghostwriter
 			if len(details) != len(patterns) {
 				continue
 			} 
+			keepGoingChannel <- false
 			return details, nil
 		}
 	}

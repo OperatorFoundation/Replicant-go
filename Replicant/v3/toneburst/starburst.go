@@ -36,14 +36,14 @@ func (config StarburstConfig) Construct() (ToneBurst, error) {
 
 func (smtp *StarburstSMTPServer) Perform(conn net.Conn) error {
 	var templateError error
-	templateError = smtp.speakTemplate(conn, ghostwriter.Template{"220 $1 SMTP service ready\r\n"}, []ghostwriter.Detail{ghostwriter.DetailString{"mail.imc.org"}})
+	templateError = smtp.speakTemplate(conn, ghostwriter.Template{String: "220 $1 SMTP service ready\r\n"}, []ghostwriter.Detail{ghostwriter.DetailString{String: "mail.imc.org"}})
 	if templateError != nil {
 		return templateError
 	}
 
 	_, templateError = smtp.listenParse(
 		conn,
-		ghostwriter.Template{"EHLO $1\r\n"},
+		ghostwriter.Template{String: "EHLO $1\r\n"},
 		[]ghostwriter.ExtractionPattern{
 			{Expression: "^([a-zA-Z0-9.-]+)\r", 
 			Type: ghostwriter.String}},
@@ -53,7 +53,7 @@ func (smtp *StarburstSMTPServer) Perform(conn net.Conn) error {
 		return templateError
 	}
 
-	templateError = smtp.speakTemplate(conn, ghostwriter.Template{"250-$1 offers a warm hug of welcome\r\n250-$2\r\n250-$3\r\n250 $4\r\n"}, []ghostwriter.Detail{ghostwriter.DetailString{"mail.imc.org"}, ghostwriter.DetailString{"8BITMIME"}, ghostwriter.DetailString{"DSN"}, ghostwriter.DetailString{"STARTTLS"}})
+	templateError = smtp.speakTemplate(conn, ghostwriter.Template{String: "250-$1 offers a warm hug of welcome\r\n250-$2\r\n250-$3\r\n250 $4\r\n"}, []ghostwriter.Detail{ghostwriter.DetailString{String: "mail.imc.org"}, ghostwriter.DetailString{String: "8BITMIME"}, ghostwriter.DetailString{String: "DSN"}, ghostwriter.DetailString{String: "STARTTLS"}})
 	if templateError != nil {
 		return templateError
 	}
@@ -63,7 +63,7 @@ func (smtp *StarburstSMTPServer) Perform(conn net.Conn) error {
 		return templateError
 	}
 
-	templateError = smtp.speakTemplate(conn, ghostwriter.Template{"220 $1\r\n"}, []ghostwriter.Detail{ghostwriter.DetailString{"Go ahead"}})
+	templateError = smtp.speakTemplate(conn, ghostwriter.Template{String: "220 $1\r\n"}, []ghostwriter.Detail{ghostwriter.DetailString{String: "Go ahead"}})
 	if templateError != nil {
 		return templateError
 	}
@@ -74,7 +74,7 @@ func (smtp *StarburstSMTPServer) Perform(conn net.Conn) error {
 func (smtp *StarburstSMTPClient) Perform(conn net.Conn) error {
 	_, templateError := smtp.listenParse(
 		conn,
-		ghostwriter.Template{"220 $1 SMTP service ready\r\n"},
+		ghostwriter.Template{String: "220 $1 SMTP service ready\r\n"},
 		[]ghostwriter.ExtractionPattern{
 			{Expression: "^([a-zA-Z0-9.-]+) ", 
 			Type: ghostwriter.String}},
@@ -84,14 +84,14 @@ func (smtp *StarburstSMTPClient) Perform(conn net.Conn) error {
 		return templateError
 	}
 
-	templateError = smtp.speakTemplate(conn, ghostwriter.Template{"EHLO $1\r\n"}, []ghostwriter.Detail{ghostwriter.DetailString{"mail.imc.org"}})
+	templateError = smtp.speakTemplate(conn, ghostwriter.Template{String: "EHLO $1\r\n"}, []ghostwriter.Detail{ghostwriter.DetailString{String: "mail.imc.org"}})
 	if templateError != nil {
 		return templateError
 	}
 
 	_, templateError = smtp.listenParse(
 		conn,
-		ghostwriter.Template{"$1\r\n"},
+		ghostwriter.Template{String: "$1\r\n"},
 		[]ghostwriter.ExtractionPattern{{Expression: "250 (STARTTLS)", Type: ghostwriter.String}},
 		253,
 		10)
@@ -106,7 +106,7 @@ func (smtp *StarburstSMTPClient) Perform(conn net.Conn) error {
 
 	_, templateError = smtp.listenParse(
 		conn,
-		ghostwriter.Template{"$1\r\n"},
+		ghostwriter.Template{String: "$1\r\n"},
 		[]ghostwriter.ExtractionPattern{
 			{Expression: "^(.+)\r", 
 			Type: ghostwriter.String}},
@@ -166,60 +166,6 @@ func (smtp *StarburstSMTP) listenString(connection net.Conn, expected string) er
 	}
 
 	return nil
-}
-
-func (smtp *StarburstSMTP) listenMatch(connection net.Conn, template ghostwriter.Template, patterns []ghostwriter.ExtractionPattern, answers []ghostwriter.Detail, maxSize int, maxTimeoutSeconds float64) (bool, error) {
-	// up until we reach max size or max timeout, read one byte at a time from connection to determine length and try using template to parse out detail. make sure details match answer
-	// channels and switch for go timeouts
-	timeout := time.After(time.Duration(maxTimeoutSeconds) * time.Second)
-        
-	var totalBytesRead = 0
-	var totalBuffer = make([]byte, 0)
-	
-	for totalBytesRead < maxSize {
-		select {
-		case <-timeout:
-			return false, errors.New("listenMatch timeout reached")
-		default:
-			var buffer = make([]byte, 1)
-			bytesRead, readError := connection.Read(buffer)
-			if readError != nil {
-				return false, readError
-			}
-			
-			if bytesRead == 0 {
-				continue
-			}
-
-			totalBuffer = append(totalBuffer, buffer...)
-			totalBytesRead += bytesRead
-
-			bufferString := string(totalBuffer)
-			details, parseError := ghostwriter.Parse(&template, patterns, bufferString)
-			if parseError != nil {
-				continue
-			}
-
-			if len(details) != len(patterns) {
-				continue
-			} 
-
-			var matched = true
-			for index, detail := range details {
-				answer := answers[index]
-				if detail != answer {
-					matched = false
-					break
-				}
-			}
-
-			if !matched {
-				return false, errors.New("detail and answer did not match")
-			}
-			return true, nil
-		}
-	}
-	return false, errors.New("listenMatch: unexpected code path")
 }
 
 func (smtp *StarburstSMTP) listenParse(connection net.Conn, template ghostwriter.Template, patterns []ghostwriter.ExtractionPattern, maxSize int, maxTimeoutSeconds int64) ([]ghostwriter.Detail, error) {

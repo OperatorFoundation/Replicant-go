@@ -94,7 +94,7 @@ func (monotone *Monotone) Perform(conn net.Conn) error {
 			return nil
 		}
 
-		if removeParts != nil && len(removeParts) > 0 {
+		if len(removeParts) > 0 {
 			removePart := removeParts[0]
 			removeParts = removeParts[1:]
 
@@ -109,7 +109,7 @@ func (monotone *Monotone) Perform(conn net.Conn) error {
 			}
 		}
 
-		if addMessages != nil && len(addMessages) > 0 {
+		if len(addMessages) > 0 {
 			//Get the first sequence in the list of add sequences
 			firstMessage := addMessages[0]
 			addMessages = addMessages[1:]

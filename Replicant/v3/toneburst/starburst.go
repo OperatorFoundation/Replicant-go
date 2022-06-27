@@ -12,7 +12,7 @@ type StarburstConfig struct {
 	FunctionName string
 }
 
-type StarburstSMTP struct {	
+type StarburstSMTP struct {
 }
 
 type StarburstSMTPServer struct {
@@ -45,8 +45,8 @@ func (smtp *StarburstSMTPServer) Perform(conn net.Conn) error {
 		conn,
 		ghostwriter.Template{String: "EHLO $1\r\n"},
 		[]ghostwriter.ExtractionPattern{
-			{Expression: "^([a-zA-Z0-9.-]+)\r", 
-			Type: ghostwriter.String}},
+			{Expression: "^([a-zA-Z0-9.-]+)\r",
+				Type: ghostwriter.String}},
 		253,
 		10)
 	if templateError != nil {
@@ -76,8 +76,8 @@ func (smtp *StarburstSMTPClient) Perform(conn net.Conn) error {
 		conn,
 		ghostwriter.Template{String: "220 $1 SMTP service ready\r\n"},
 		[]ghostwriter.ExtractionPattern{
-			{Expression: "^([a-zA-Z0-9.-]+) ", 
-			Type: ghostwriter.String}},
+			{Expression: "^([a-zA-Z0-9.-]+) ",
+				Type: ghostwriter.String}},
 		253,
 		10)
 	if templateError != nil {
@@ -108,8 +108,8 @@ func (smtp *StarburstSMTPClient) Perform(conn net.Conn) error {
 		conn,
 		ghostwriter.Template{String: "$1\r\n"},
 		[]ghostwriter.ExtractionPattern{
-			{Expression: "^(.+)\r", 
-			Type: ghostwriter.String}},
+			{Expression: "^(.+)\r",
+				Type: ghostwriter.String}},
 		253,
 		10)
 	if templateError != nil {
@@ -121,7 +121,7 @@ func (smtp *StarburstSMTPClient) Perform(conn net.Conn) error {
 
 func (smtp *StarburstSMTP) speakString(connection net.Conn, speakString string) error {
 	var bytesWritten = 0
-	var writeError error 
+	var writeError error
 	var bytesToWrite = []byte(speakString)
 	for len(bytesToWrite) > 0 {
 		bytesWritten, writeError = connection.Write(bytesToWrite)
@@ -140,14 +140,14 @@ func (smtp *StarburstSMTP) speakTemplate(connection net.Conn, speakTemplate ghos
 	if generateError != nil {
 		return generateError
 	}
-	
+
 	smtp.speakString(connection, *generated)
 
 	return nil
 }
 
 func (smtp *StarburstSMTP) listenString(connection net.Conn, expected string) error {
-	// use read to get (expected lenght number of)bytes, convert to string, and then compare them to see if they match 
+	// use read to get (expected lenght number of)bytes, convert to string, and then compare them to see if they match
 	expectedLength := len(expected)
 	readBuffer := make([]byte, expectedLength)
 	bytesRead, readError := connection.Read(readBuffer)
@@ -171,7 +171,7 @@ func (smtp *StarburstSMTP) listenString(connection net.Conn, expected string) er
 func (smtp *StarburstSMTP) listenParse(connection net.Conn, template ghostwriter.Template, patterns []ghostwriter.ExtractionPattern, maxSize int, maxTimeoutSeconds int64) ([]ghostwriter.Detail, error) {
 	// keep listening until we have the right number of details (same number as patterns) then return the details
 	timeout := time.After(time.Duration(maxTimeoutSeconds) * time.Second)
-        
+
 	var totalBytesRead = 0
 	var totalBuffer = make([]byte, 0)
 
@@ -179,14 +179,14 @@ func (smtp *StarburstSMTP) listenParse(connection net.Conn, template ghostwriter
 	var keepGoingChannel = make(chan bool)
 
 	go func() {
-		for <- keepGoingChannel {
+		for <-keepGoingChannel {
 			var buffer = make([]byte, 1)
 			bytesRead, readError := connection.Read(buffer)
 			if readError != nil {
 				close(byteChannel)
 				return
 			}
-			
+
 			if bytesRead == 0 {
 				continue
 			}
@@ -202,7 +202,7 @@ func (smtp *StarburstSMTP) listenParse(connection net.Conn, template ghostwriter
 		case <-timeout:
 			keepGoingChannel <- false
 			return nil, errors.New("listenParse timeout reached")
-		case buffer, ok := <- byteChannel:
+		case buffer, ok := <-byteChannel:
 			if !ok {
 				keepGoingChannel <- false
 				return nil, errors.New("error while trying to read")
@@ -218,7 +218,7 @@ func (smtp *StarburstSMTP) listenParse(connection net.Conn, template ghostwriter
 
 			if len(details) != len(patterns) {
 				continue
-			} 
+			}
 			keepGoingChannel <- false
 			return details, nil
 		}

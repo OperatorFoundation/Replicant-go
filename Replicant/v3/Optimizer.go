@@ -25,9 +25,10 @@
 package replicant
 
 import (
+	"net"
+
 	pt "github.com/OperatorFoundation/shapeshifter-ipc/v3"
 	"golang.org/x/net/proxy"
-	"net"
 )
 
 // This makes Replicant compliant with Optimizer
@@ -88,13 +89,3 @@ func (transport TransportServer) Listen() (net.Listener, error) {
 
 	return newReplicantTransportListener(ln, transport.Config), nil
 }
-
-//replicantTransport := New(transport.Config, transport.Dialer)
-//conn := replicantTransport.Dial(transport.Address)
-//conn, err:= replicantTransport.Dial(transport.Address), errors.New("connection failed")
-//if err != nil {
-//	return nil, err
-//} else {
-//	return conn, nil
-//}
-//return conn, nil

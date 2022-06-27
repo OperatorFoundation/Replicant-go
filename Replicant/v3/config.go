@@ -26,6 +26,7 @@ package replicant
 
 import (
 	"encoding/json"
+
 	"github.com/OperatorFoundation/Replicant-go/Replicant/v3/polish"
 	"github.com/OperatorFoundation/Replicant-go/Replicant/v3/toneburst"
 )

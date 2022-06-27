@@ -27,8 +27,9 @@ package toneburst
 import (
 	"bufio"
 	"errors"
-	"github.com/OperatorFoundation/monolith-go/monolith"
 	"net"
+
+	"github.com/OperatorFoundation/monolith-go/monolith"
 )
 
 type MonotoneConfig struct {
@@ -78,7 +79,7 @@ func (monotone *Monotone) Perform(conn net.Conn) error {
 			return errors.New("invalid configuration, cannot speak first when there is nothing to add")
 		}
 
-		//Get the first sequence in the list of add sequences
+		// Get the first sequence in the list of add sequences
 		firstMessage := addMessages[0]
 		addMessages = addMessages[1:]
 		addBytes := firstMessage.Bytes()
@@ -110,7 +111,7 @@ func (monotone *Monotone) Perform(conn net.Conn) error {
 		}
 
 		if len(addMessages) > 0 {
-			//Get the first sequence in the list of add sequences
+			// Get the first sequence in the list of add sequences
 			firstMessage := addMessages[0]
 			addMessages = addMessages[1:]
 			addBytes := firstMessage.Bytes()

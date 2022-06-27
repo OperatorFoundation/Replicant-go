@@ -26,7 +26,6 @@
 package replicant
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"net"
@@ -38,17 +37,6 @@ import (
 type ConnectionState struct {
 	toneburst toneburst.ToneBurst
 	polish    polish.Connection
-}
-
-type Connection struct {
-	state         *ConnectionState
-	conn          net.Conn
-	receiveBuffer *bytes.Buffer
-}
-
-type Server struct {
-	toneburst toneburst.ToneBurst
-	polish    polish.Server
 }
 
 type replicantTransportListener struct {

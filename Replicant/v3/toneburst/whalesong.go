@@ -30,7 +30,7 @@ import (
 )
 
 type WhalesongConfig struct {
-	AddSequences []Sequence
+	AddSequences    []Sequence
 	RemoveSequences []Sequence
 }
 
@@ -47,7 +47,6 @@ type Whalesong struct {
 func NewWhalesong(config WhalesongConfig) *Whalesong {
 	return &Whalesong{config: config}
 }
-
 
 //TODO: Implement Perform
 func (whalesong *Whalesong) Perform(conn net.Conn) error {

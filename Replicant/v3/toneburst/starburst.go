@@ -147,6 +147,7 @@ func (smtp *StarburstSMTP) speakTemplate(connection net.Conn, speakTemplate ghos
 }
 
 func (smtp *StarburstSMTP) listenString(connection net.Conn, expected string) error {
+	connection.SetReadDeadline(time.Now().Add(5 * time.Minute))
 	// use read to get (expected lenght number of)bytes, convert to string, and then compare them to see if they match
 	expectedLength := len(expected)
 	readBuffer := make([]byte, expectedLength)
@@ -169,6 +170,7 @@ func (smtp *StarburstSMTP) listenString(connection net.Conn, expected string) er
 }
 
 func (smtp *StarburstSMTP) listenParse(connection net.Conn, template ghostwriter.Template, patterns []ghostwriter.ExtractionPattern, maxSize int, maxTimeoutSeconds int64) ([]ghostwriter.Detail, error) {
+	connection.SetReadDeadline(time.Now().Add(5 * time.Minute))
 	// keep listening until we have the right number of details (same number as patterns) then return the details
 	timeout := time.After(time.Duration(maxTimeoutSeconds) * time.Second)
 

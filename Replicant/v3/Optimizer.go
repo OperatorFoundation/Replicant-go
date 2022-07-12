@@ -26,6 +26,7 @@ package replicant
 
 import (
 	"net"
+	"time"
 
 	pt "github.com/OperatorFoundation/shapeshifter-ipc/v3"
 	"golang.org/x/net/proxy"
@@ -35,12 +36,14 @@ import (
 type TransportClient struct {
 	Config  ClientConfig
 	Address string
+	// TODO: Dialer can be removed later (both here and in dispatcher)
 	Dialer  proxy.Dialer
 }
 
 type TransportServer struct {
 	Config  ServerConfig
 	Address string
+	// TODO: Dialer can be removed later (both here and in dispatcher)
 	Dialer  proxy.Dialer
 }
 
@@ -61,7 +64,8 @@ func NewServer(config ServerConfig, address string, dialer proxy.Dialer) Transpo
 }
 
 func (transport TransportClient) Dial() (net.Conn, error) {
-	conn, dialErr := transport.Dialer.Dial("tcp", transport.Address)
+	dialTimeout := time.Minute * 5
+	conn, dialErr := net.DialTimeout("tcp", transport.Address, dialTimeout)
 	if dialErr != nil {
 		return nil, dialErr
 	}

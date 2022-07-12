@@ -28,6 +28,7 @@ import (
 	"bufio"
 	"errors"
 	"net"
+	"time"
 
 	"github.com/OperatorFoundation/monolith-go/monolith"
 )
@@ -125,6 +126,7 @@ func (monotone *Monotone) Perform(conn net.Conn) error {
 }
 
 func (monotone Monotone) readAll(conn net.Conn, part monolith.Monolith) (bool, error) {
+	conn.SetReadDeadline(time.Now().Add(5 * time.Minute))
 	switch partType := part.(type) {
 	case monolith.BytesPart:
 		receivedData := make([]byte, partType.Count())

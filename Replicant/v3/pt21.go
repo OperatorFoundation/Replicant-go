@@ -27,13 +27,15 @@ package replicant
 import (
 	"errors"
 	"net"
+	"time"
 
 	pt "github.com/OperatorFoundation/shapeshifter-ipc/v3"
 )
 
 // Create outgoing transport connection
 func (config ClientConfig) Dial(address string) (net.Conn, error) {
-	conn, dialErr := net.Dial("tcp", address)
+	dialTimeout := time.Minute * 5
+	conn, dialErr := net.DialTimeout("tcp", address, dialTimeout)
 	if dialErr != nil {
 		return nil, dialErr
 	}

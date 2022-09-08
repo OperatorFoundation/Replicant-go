@@ -37,7 +37,7 @@ import (
 func InitializeGobRegistry() {
 	monolith.InitializeGobRegistry()
 
-	gob.Register(toneburst.MonotoneConfig{})
+	//gob.Register(toneburst.MonotoneConfig{})
 	gob.Register(toneburst.WhalesongConfig{})
 	gob.Register(polish.DarkStarPolishClientConfig{})
 	gob.Register(polish.DarkStarPolishServerConfig{})

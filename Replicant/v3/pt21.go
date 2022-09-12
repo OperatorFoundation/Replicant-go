@@ -86,9 +86,11 @@ func (listener *replicantTransportListener) Accept() (net.Conn, error) {
 
 	newServerConn, serverConnError := NewServerConnection(conn, config)
 	if serverConnError != nil {
+		conn.Close()
 		return nil, serverConnError
 	}
 	if newServerConn == nil {
+		conn.Close()
 		return nil, errors.New("newServerConn is nil")
 	}
 

@@ -1,7 +1,6 @@
 package replicant
 
 import (
-	"encoding/hex"
 	"fmt"
 	"testing"
 
@@ -10,40 +9,28 @@ import (
 )
 
 func TestDarkStarPolish(t *testing.T) {
-	addr := "127.0.0.1:1234"
-
-	serverPrivateKeyBytes, keyError := hex.DecodeString("dd5e9e88d13e66017eb2087b128c1009539d446208f86173e30409a898ada148")
-	if keyError != nil {
-		fmt.Println(keyError)
-		t.Fail()
-		return
-	}
+	serverPrivateKeyString := "RaHouPFVOazVSqInoMm8BSO9o/7J493y4cUVofmwXAU="
 
 	polishServerConfig := polish.DarkStarPolishServerConfig{
-		Host:             "127.0.0.1",
-		Port:             1234,
-		ServerPrivateKey: serverPrivateKeyBytes,
+		ServerAddress: "127.0.0.1:2345",
+		ServerPrivateKey: serverPrivateKeyString,
 	}
 
-	serverPublicKeyBytes, keyError := hex.DecodeString("d089c225ef8cda8d477a586f062b31a756270124d94944e458edf1a9e1e41ed6")
-	if keyError != nil {
-		fmt.Println(keyError)
-		t.Fail()
-		return
-	}
+	serverPublicKeyString := "6LukZ8KqZLQ7eOdaTVFkBVqMA8NS1AUxwqG17L/kHnQ="
 
 	polishClientConfig := polish.DarkStarPolishClientConfig{
-		Host:            "127.0.0.1",
-		Port:            1234,
-		ServerPublicKey: serverPublicKeyBytes,
+		ServerAddress: "127.0.0.1:2345",
+		ServerPublicKey: serverPublicKeyString,
 	}
 
 	serverConfig := ServerConfig{
+		ServerAddress: "127.0.0.1:2345",
 		Toneburst: nil,
 		Polish:    polishServerConfig,
+		Transport: "replicant",
 	}
 
-	listener, listenError := serverConfig.Listen(addr)
+	listener, listenError := serverConfig.Listen()
 	if listenError != nil {
 		fmt.Println(listenError)
 		t.Fail()
@@ -87,11 +74,13 @@ func TestDarkStarPolish(t *testing.T) {
 	}()
 
 	clientConfig := ClientConfig{
+		ServerAddress: "127.0.0.1:2345",
 		Toneburst: nil,
 		Polish:    polishClientConfig,
+		Transport: "replicant",
 	}
 
-	clientConn, clientConnError := clientConfig.Dial(addr)
+	clientConn, clientConnError := clientConfig.Dial()
 	if clientConnError != nil {
 		fmt.Println(clientConnError)
 		t.Fail()
@@ -120,18 +109,18 @@ func TestDarkStarPolish(t *testing.T) {
 }
 
 func TestStarburstToneburst(t *testing.T) {
-	addr := "127.0.0.1:1234"
-
 	toneburstServerConfig := toneburst.StarburstConfig{
-		FunctionName: "SMTPServer",
+		Mode: "SMTPServer",
 	}
 
 	serverConfig := ServerConfig{
+		ServerAddress: "127.0.0.1:2345",
 		Toneburst: toneburstServerConfig,
 		Polish:    nil,
+		Transport: "replicant",
 	}
 
-	listener, listenError := serverConfig.Listen(addr)
+	listener, listenError := serverConfig.Listen()
 	if listenError != nil {
 		fmt.Println(listenError)
 		t.Fail()
@@ -175,15 +164,17 @@ func TestStarburstToneburst(t *testing.T) {
 	}()
 
 	toneburstClientConfig := toneburst.StarburstConfig{
-		FunctionName: "SMTPClient",
+		Mode: "SMTPClient",
 	}
 
 	clientConfig := ClientConfig{
+		ServerAddress: "127.0.0.1:2345",
 		Toneburst: toneburstClientConfig,
 		Polish:    nil,
+		Transport: "replicant",
 	}
 
-	clientConn, clientConnError := clientConfig.Dial(addr)
+	clientConn, clientConnError := clientConfig.Dial()
 	if clientConnError != nil {
 		fmt.Println(clientConnError)
 		t.Fail()
@@ -212,44 +203,32 @@ func TestStarburstToneburst(t *testing.T) {
 }
 
 func TestStarburstToneburstDarkStarPolish(t *testing.T) {
-	addr := "127.0.0.1:1234"
-
-	serverPrivateKeyBytes, keyError := hex.DecodeString("dd5e9e88d13e66017eb2087b128c1009539d446208f86173e30409a898ada148")
-	if keyError != nil {
-		fmt.Println(keyError)
-		t.Fail()
-		return
-	}
+	serverPrivateKeyString := "RaHouPFVOazVSqInoMm8BSO9o/7J493y4cUVofmwXAU="
 
 	polishServerConfig := polish.DarkStarPolishServerConfig{
-		Host:             "127.0.0.1",
-		Port:             1234,
-		ServerPrivateKey: serverPrivateKeyBytes,
+		ServerAddress: "127.0.0.1:2345",
+		ServerPrivateKey: serverPrivateKeyString,
 	}
 
-	serverPublicKeyBytes, keyError := hex.DecodeString("d089c225ef8cda8d477a586f062b31a756270124d94944e458edf1a9e1e41ed6")
-	if keyError != nil {
-		fmt.Println(keyError)
-		t.Fail()
-		return
-	}
+	serverPublicKeyString := "6LukZ8KqZLQ7eOdaTVFkBVqMA8NS1AUxwqG17L/kHnQ="
 
 	polishClientConfig := polish.DarkStarPolishClientConfig{
-		Host:            "127.0.0.1",
-		Port:            1234,
-		ServerPublicKey: serverPublicKeyBytes,
+		ServerAddress: "127.0.0.1:2345",
+		ServerPublicKey: serverPublicKeyString,
 	}
 
 	toneburstServerConfig := toneburst.StarburstConfig{
-		FunctionName: "SMTPServer",
+		Mode: "SMTPServer",
 	}
 
 	serverConfig := ServerConfig{
+		ServerAddress: "127.0.0.1:2345",
 		Toneburst: toneburstServerConfig,
 		Polish:    polishServerConfig,
+		Transport: "replicant",
 	}
 
-	listener, listenError := serverConfig.Listen(addr)
+	listener, listenError := serverConfig.Listen()
 	if listenError != nil {
 		fmt.Println(listenError)
 		t.Fail()
@@ -293,15 +272,17 @@ func TestStarburstToneburstDarkStarPolish(t *testing.T) {
 	}()
 
 	toneburstClientConfig := toneburst.StarburstConfig{
-		FunctionName: "SMTPClient",
+		Mode: "SMTPClient",
 	}
 
 	clientConfig := ClientConfig{
+		ServerAddress: "127.0.0.1:2345",
 		Toneburst: toneburstClientConfig,
 		Polish:    polishClientConfig,
+		Transport: "replicant",
 	}
 
-	clientConn, clientConnError := clientConfig.Dial(addr)
+	clientConn, clientConnError := clientConfig.Dial()
 	if clientConnError != nil {
 		fmt.Println(clientConnError)
 		t.Fail()

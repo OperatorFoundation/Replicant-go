@@ -28,7 +28,6 @@ import (
 	"net"
 	"time"
 
-	pt "github.com/OperatorFoundation/shapeshifter-ipc/v3"
 	"golang.org/x/net/proxy"
 )
 
@@ -37,28 +36,28 @@ type TransportClient struct {
 	Config  ClientConfig
 	Address string
 	// TODO: Dialer can be removed later (both here and in dispatcher)
-	Dialer  proxy.Dialer
+	Dialer proxy.Dialer
 }
 
 type TransportServer struct {
 	Config  ServerConfig
 	Address string
 	// TODO: Dialer can be removed later (both here and in dispatcher)
-	Dialer  proxy.Dialer
+	Dialer proxy.Dialer
 }
 
 func NewClient(config ClientConfig, dialer proxy.Dialer) TransportClient {
 	return TransportClient{
 		Config:  config,
-		Address: config.Address,
+		Address: config.ServerAddress,
 		Dialer:  dialer,
 	}
 }
 
-func NewServer(config ServerConfig, address string, dialer proxy.Dialer) TransportServer {
+func NewServer(config ServerConfig, dialer proxy.Dialer) TransportServer {
 	return TransportServer{
 		Config:  config,
-		Address: address,
+		Address: config.ServerAddress,
 		Dialer:  dialer,
 	}
 }
@@ -81,7 +80,7 @@ func (transport TransportClient) Dial() (net.Conn, error) {
 }
 
 func (transport TransportServer) Listen() (net.Listener, error) {
-	addr, resolveErr := pt.ResolveAddr(transport.Address)
+	addr, resolveErr := ResolveAddr(transport.Address)
 	if resolveErr != nil {
 		return nil, resolveErr
 	}

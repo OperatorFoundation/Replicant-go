@@ -4,9 +4,8 @@ go 1.17
 
 require (
 	github.com/OperatorFoundation/ghostwriter-go v1.0.6
-	github.com/OperatorFoundation/go-shadowsocks2 v1.1.11
+	github.com/OperatorFoundation/go-shadowsocks2 v1.1.12
 	github.com/OperatorFoundation/monolith-go/monolith v1.0.10
-	github.com/OperatorFoundation/shapeshifter-ipc/v3 v3.0.0
 	github.com/aead/ecdh v0.2.0
 	golang.org/x/net v0.0.0-20200226121028-0de0cce0169b
 )

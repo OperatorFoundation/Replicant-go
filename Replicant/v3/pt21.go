@@ -26,16 +26,22 @@ package replicant
 
 import (
 	"errors"
+	"fmt"
 	"net"
+	"strconv"
+	"strings"
 	"time"
-
-	pt "github.com/OperatorFoundation/shapeshifter-ipc/v3"
 )
 
 // Create outgoing transport connection
-func (config ClientConfig) Dial(address string) (net.Conn, error) {
+func (config ClientConfig) Dial() (net.Conn, error) {
+	// Verify the transport name on the config
+	if config.Transport != "replicant" {
+		return nil, errors.New("incorrect transport name")
+	}
+
 	dialTimeout := time.Minute * 5
-	conn, dialErr := net.DialTimeout("tcp", address, dialTimeout)
+	conn, dialErr := net.DialTimeout("tcp", config.ServerAddress, dialTimeout)
 	if dialErr != nil {
 		return nil, dialErr
 	}
@@ -52,8 +58,13 @@ func (config ClientConfig) Dial(address string) (net.Conn, error) {
 }
 
 // Create listener for incoming transport connection
-func (config ServerConfig) Listen(address string) (net.Listener, error) {
-	addr, resolveErr := pt.ResolveAddr(address)
+func (config ServerConfig) Listen() (net.Listener, error) {
+	// Verify the transport name on the config
+	if config.Transport != "replicant" {
+		return nil, errors.New("incorrect transport name")
+	}
+	
+	addr, resolveErr := ResolveAddr(config.ServerAddress)
 	if resolveErr != nil {
 		return nil, resolveErr
 	}
@@ -104,3 +115,44 @@ func (listener *replicantTransportListener) Close() error {
 }
 
 var _ net.Listener = (*replicantTransportListener)(nil)
+
+// Resolve an address string into a net.TCPAddr. We are a bit more strict than
+// net.ResolveTCPAddr; we don't allow an empty host or port, and the host part
+// must be a literal IP address.
+func ResolveAddr(addrStr string) (*net.TCPAddr, error) {
+	ipStr, portStr, err := net.SplitHostPort(addrStr)
+	if err != nil {
+		// Before the fixing of bug #7011, tor doesn't put brackets around IPv6
+		// addresses. Split after the last colon, assuming it is a port
+		// separator, and try adding the brackets.
+		parts := strings.Split(addrStr, ":")
+		if len(parts) <= 2 {
+			return nil, err
+		}
+		addrStr := "[" + strings.Join(parts[:len(parts)-1], ":") + "]:" + parts[len(parts)-1]
+		ipStr, portStr, err = net.SplitHostPort(addrStr)
+	}
+	if err != nil {
+		return nil, err
+	}
+	if ipStr == "" {
+		return nil, net.InvalidAddrError(fmt.Sprintf("address string %q lacks a host part", addrStr))
+	}
+	if portStr == "" {
+		return nil, net.InvalidAddrError(fmt.Sprintf("address string %q lacks a port part", addrStr))
+	}
+	ip := net.ParseIP(ipStr)
+	if ip == nil {
+		return nil, net.InvalidAddrError(fmt.Sprintf("not an IP string: %q", ipStr))
+	}
+	port, err := parsePort(portStr)
+	if err != nil {
+		return nil, err
+	}
+	return &net.TCPAddr{IP: ip, Port: port}, nil
+}
+
+func parsePort(portStr string) (int, error) {
+	port, err := strconv.ParseUint(portStr, 10, 16)
+	return int(port), err
+}

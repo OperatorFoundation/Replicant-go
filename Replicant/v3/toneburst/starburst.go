@@ -9,7 +9,7 @@ import (
 )
 
 type StarburstConfig struct {
-	FunctionName string
+	Mode string
 }
 
 type StarburstSMTP struct {
@@ -24,7 +24,7 @@ type StarburstSMTPClient struct {
 }
 
 func (config StarburstConfig) Construct() (ToneBurst, error) {
-	switch config.FunctionName {
+	switch config.Mode {
 	case "SMTPServer":
 		return &StarburstSMTPServer{}, nil
 	case "SMTPClient":
@@ -53,7 +53,28 @@ func (smtp *StarburstSMTPServer) Perform(conn net.Conn) error {
 		return templateError
 	}
 
-	templateError = smtp.speakTemplate(conn, ghostwriter.Template{String: "250-$1 offers a warm hug of welcome\r\n250-$2\r\n250-$3\r\n250 $4\r\n"}, []ghostwriter.Detail{ghostwriter.DetailString{String: "mail.imc.org"}, ghostwriter.DetailString{String: "8BITMIME"}, ghostwriter.DetailString{String: "DSN"}, ghostwriter.DetailString{String: "STARTTLS"}})
+	currentTime := time.Now()        
+	hour := currentTime.Hour()
+	hourRemainder := hour %5
+	var welcomeMessage string
+
+	switch hourRemainder {
+	case 0:
+		welcomeMessage = "offers a warm hug of welcome"
+	case 1:
+		welcomeMessage = "is my domain name."
+	case 2:
+		welcomeMessage = "I am glad to meet you"
+	case 3:
+		welcomeMessage = "says hello"
+	case 4:
+		welcomeMessage = "Hello"
+	default:
+		welcomeMessage = ""
+	}
+	
+
+	templateError = smtp.speakTemplate(conn, ghostwriter.Template{String: "250-$1 $2\r\n250-$3\r\n250-$4\r\n250 $5\r\n"}, []ghostwriter.Detail{ghostwriter.DetailString{String: "mail.imc.org"}, ghostwriter.DetailString{String: welcomeMessage}, ghostwriter.DetailString{String: "8BITMIME"}, ghostwriter.DetailString{String: "DSN"}, ghostwriter.DetailString{String: "STARTTLS"}})
 	if templateError != nil {
 		return templateError
 	}

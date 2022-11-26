@@ -39,6 +39,7 @@ func InitializeGobRegistry() {
 
 	//gob.Register(toneburst.MonotoneConfig{})
 	gob.Register(toneburst.WhalesongConfig{})
+	gob.Register(toneburst.StarburstConfig{})
 	gob.Register(polish.DarkStarPolishClientConfig{})
 	gob.Register(polish.DarkStarPolishServerConfig{})
 }

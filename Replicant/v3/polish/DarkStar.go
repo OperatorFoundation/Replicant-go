@@ -4,25 +4,25 @@ import (
 	"crypto"
 	"crypto/elliptic"
 	"crypto/rand"
-	"encoding/hex"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"net"
+	"strconv"
+	"strings"
 
 	"github.com/OperatorFoundation/go-shadowsocks2/darkstar"
 	"github.com/aead/ecdh"
 )
 
 type DarkStarPolishServerConfig struct {
-	ServerPrivateKey []byte
-	Host             string
-	Port             int
+	ServerAddress	 string
+	ServerPrivateKey string
 }
 
 type DarkStarPolishClientConfig struct {
-	ServerPublicKey []byte
-	Host            string
-	Port            int
+	ServerAddress	string
+	ServerPublicKey string
 }
 
 type DarkStarPolishServer struct {
@@ -83,7 +83,7 @@ func (clientConn *DarkStarPolishClientConnection) Handshake(conn net.Conn) (net.
 	return streamConn, nil
 }
 
-func NewDarkStarPolishClientConfigFromPrivate(serverPrivateKey crypto.PrivateKey, host string, port int) (*DarkStarPolishClientConfig, error) {
+func NewDarkStarPolishClientConfigFromPrivate(serverPrivateKey crypto.PrivateKey) (*DarkStarPolishClientConfig, error) {
 	keyExchange := ecdh.Generic(elliptic.P256())
 	serverPublicKey := keyExchange.PublicKey(serverPrivateKey)
 	fmt.Print("server publicKey: ")
@@ -94,21 +94,17 @@ func NewDarkStarPolishClientConfigFromPrivate(serverPrivateKey crypto.PrivateKey
 	}
 
 	return &DarkStarPolishClientConfig{
-		ServerPublicKey: publicKeyBytes,
-		Host:            host,
-		Port:            port,
+		ServerPublicKey: base64.StdEncoding.EncodeToString(publicKeyBytes),
 	}, nil
 }
 
-func NewDarkStarPolishClientConfig(serverPublicKey []byte, host string, port int) (*DarkStarPolishClientConfig, error) {
+func NewDarkStarPolishClientConfig(serverPublicKey []byte) (*DarkStarPolishClientConfig, error) {
 	return &DarkStarPolishClientConfig{
-		ServerPublicKey: serverPublicKey,
-		Host:            host,
-		Port:            port,
+		ServerPublicKey: base64.StdEncoding.EncodeToString(serverPublicKey),
 	}, nil
 }
 
-func NewDarkStarPolishServerConfig(host string, port int) (*DarkStarPolishServerConfig, error) {
+func NewDarkStarPolishServerConfig() (*DarkStarPolishServerConfig, error) {
 	keyExchange := ecdh.Generic(elliptic.P256())
 	serverEphemeralPrivateKey, _, keyError := keyExchange.GenerateKey(rand.Reader)
 	if keyError != nil {
@@ -121,15 +117,20 @@ func NewDarkStarPolishServerConfig(host string, port int) (*DarkStarPolishServer
 	}
 
 	return &DarkStarPolishServerConfig{
-		ServerPrivateKey: privateKeyBytes,
-		Host:             host,
-		Port:             port,
+		ServerPrivateKey: base64.StdEncoding.EncodeToString(privateKeyBytes),
 	}, nil
 }
 
 func NewDarkStarClient(config DarkStarPolishClientConfig) Connection {
-	publicKeyString := hex.EncodeToString(config.ServerPublicKey)
-	darkStarClient := darkstar.NewDarkStarClient(publicKeyString, config.Host, config.Port)
+	// Get a host and port from the provided address string
+	addressArray := strings.Split(config.ServerAddress, ":")
+	host := addressArray[0]
+	port, stringErr := strconv.Atoi(addressArray[1])
+	if stringErr != nil {
+		fmt.Println("Error: failed to make the port string into an int")
+	}
+
+	darkStarClient := darkstar.NewDarkStarClient(config.ServerPublicKey, host, port)
 	darkStarClientConnection := DarkStarPolishClientConnection{
 		darkStarClient: *darkStarClient,
 	}
@@ -137,8 +138,15 @@ func NewDarkStarClient(config DarkStarPolishClientConfig) Connection {
 }
 
 func NewDarkStarServer(config DarkStarPolishServerConfig) DarkStarPolishServer {
-	privateKeyString := hex.EncodeToString(config.ServerPrivateKey)
-	darkStarServer := darkstar.NewDarkStarServer(privateKeyString, config.Host, config.Port)
+	// Get a host and port from the provided address string
+	addressArray := strings.Split(config.ServerAddress, ":")
+	host := addressArray[0]
+	port, stringErr := strconv.Atoi(addressArray[1])
+	if stringErr != nil {
+		fmt.Println("Error: failed to make the port string into an int")
+	}
+	
+	darkStarServer := darkstar.NewDarkStarServer(config.ServerPrivateKey, host, port)
 	darkStarPolishServer := DarkStarPolishServer{
 		darkStarServer: *darkStarServer,
 	}

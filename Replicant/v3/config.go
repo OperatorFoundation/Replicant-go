@@ -32,14 +32,17 @@ import (
 )
 
 type ClientConfig struct {
-	Toneburst toneburst.Config
-	Polish    polish.ClientConfig
-	Address   string
+	ServerAddress string    		  `json:"serverAddress"`
+	Toneburst     toneburst.Config    `json:"toneburst"`    
+	Polish        polish.ClientConfig `json:"polish"`       
+	Transport     string    		  `json:"transport"`
 }
 
 type ServerConfig struct {
-	Toneburst toneburst.Config
-	Polish    polish.ServerConfig
+	ServerAddress string    		  `json:"serverAddress"`
+	Toneburst     toneburst.Config    `json:"toneburst"`    
+	Polish        polish.ServerConfig `json:"polish"`       
+	Transport     string    		  `json:"transport"`
 }
 
 type ClientJSONConfig struct {
@@ -54,16 +57,31 @@ type ServerJSONOuterConfig struct {
 	Replicant ServerJSONInnerConfig
 }
 
+func (config ServerConfig) ToJsonString() (string, error) {
+	jsonBytes, marshalError := json.MarshalIndent(config, "", "  ")
+	if marshalError != nil {
+		return "", marshalError
+	}
+
+	return string(jsonBytes), nil
+}
+
+func (config ClientConfig) ToJsonString() (string, error) {
+	jsonBytes, marshalError := json.MarshalIndent(config, "", "  ")
+	if marshalError != nil {
+		return "", marshalError
+	}
+
+	return string(jsonBytes), nil
+}
+
 func (config ServerConfig) Marshal() (string, error) {
 	configString, configStringError := config.Encode()
 	if configStringError != nil {
 		return "", configStringError
 	}
 
-	innerConfig := ServerJSONInnerConfig{Config: configString}
-	outerConfig := ServerJSONOuterConfig{Replicant: innerConfig}
-
-	configBytes, marshalError := json.Marshal(outerConfig)
+	configBytes, marshalError := json.Marshal(configString)
 	if marshalError != nil {
 		return "", marshalError
 	}

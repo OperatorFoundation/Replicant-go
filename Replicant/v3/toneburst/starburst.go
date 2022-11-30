@@ -9,7 +9,7 @@ import (
 )
 
 type StarburstConfig struct {
-	Mode string
+	Mode string `json:"mode"`
 }
 
 type StarburstSMTP struct {

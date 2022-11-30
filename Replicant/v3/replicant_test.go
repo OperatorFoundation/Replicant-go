@@ -68,6 +68,7 @@ func runReplicantServer() {
 		ServerAddress: "127.0.0.1:1234",
 		Toneburst: nil,
 		Polish:    nil,
+		Transport: "replicant",
 	}
 
 	go func() {

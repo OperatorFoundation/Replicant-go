@@ -16,13 +16,13 @@ import (
 )
 
 type DarkStarPolishServerConfig struct {
-	ServerAddress	 string
-	ServerPrivateKey string
+	ServerAddress	 string `json:"serverAddress"`
+	ServerPrivateKey string `json:"serverPrivateKey"`
 }
 
 type DarkStarPolishClientConfig struct {
-	ServerAddress	string
-	ServerPublicKey string
+	ServerAddress	string `json:"serverAddress"`
+	ServerPublicKey string `json:"serverPublicKey"`
 }
 
 type DarkStarPolishServer struct {

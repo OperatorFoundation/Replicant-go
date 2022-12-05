@@ -26,6 +26,7 @@ package replicant
 
 import (
 	"encoding/json"
+	"errors"
 
 	"github.com/OperatorFoundation/Replicant-go/Replicant/v3/polish"
 	"github.com/OperatorFoundation/Replicant-go/Replicant/v3/toneburst"
@@ -43,18 +44,6 @@ type ServerConfig struct {
 	Toneburst     toneburst.Config    `json:"toneburst"`    
 	Polish        polish.ServerConfig `json:"polish"`       
 	Transport     string    		  `json:"transport"`
-}
-
-type ClientJSONConfig struct {
-	Config string `json:"config"`
-}
-
-type ServerJSONInnerConfig struct {
-	Config string `json:"config"`
-}
-
-type ServerJSONOuterConfig struct {
-	Replicant ServerJSONInnerConfig
 }
 
 func (config ServerConfig) ToJsonString() (string, error) {
@@ -76,32 +65,87 @@ func (config ClientConfig) ToJsonString() (string, error) {
 }
 
 func (config ServerConfig) Marshal() (string, error) {
-	configString, configStringError := config.Encode()
-	if configStringError != nil {
-		return "", configStringError
+	polishConfig, ok := config.Polish.(polish.DarkStarPolishServerConfig)
+	if !ok {
+		return "", errors.New("polish config was not a DarkStar polish config")
 	}
 
-	configBytes, marshalError := json.Marshal(configString)
-	if marshalError != nil {
-		return "", marshalError
+	jsonConfig := ServerJsonConfig {
+		ServerAddress: config.ServerAddress,
+		Toneburst: config.Toneburst,
+		Polish: DarkStarPolishServerJsonConfig{ServerPrivateKey: polishConfig.ServerPrivateKey},
+		Transport: config.Transport,
+	}
+
+	configBytes, configStringError := json.Marshal(jsonConfig)
+	if configStringError != nil {
+		return "", configStringError
 	}
 
 	return string(configBytes), nil
 }
 
 func (config ClientConfig) Marshal() (string, error) {
+	polishConfig, ok := config.Polish.(polish.DarkStarPolishClientConfig)
+	if !ok {
+		return "", errors.New("polish config was not a DarkStar polish config")
+	}
 
-	configString, configStringError := config.Encode()
+	jsonConfig := ClientJsonConfig {
+		ServerAddress: config.ServerAddress,
+		Toneburst: config.Toneburst,
+		Polish: DarkStarPolishClientJsonConfig{ServerPublicKey: polishConfig.ServerPublicKey},
+		Transport: config.Transport,
+	}
+
+	configBytes, configStringError := json.Marshal(jsonConfig)
 	if configStringError != nil {
 		return "", configStringError
 	}
 
-	clientConfig := ClientJSONConfig{Config: configString}
+	return string(configBytes), nil
+}
 
-	configBytes, marshalError := json.Marshal(clientConfig)
-	if marshalError != nil {
-		return "", marshalError
+func UnmarshalClientConfig(data []byte) (*ClientConfig, error) {
+	var clientJsonConfig ClientJsonConfig
+	unmarshalError := json.Unmarshal(data, &clientJsonConfig)
+	if unmarshalError != nil {
+		return nil, unmarshalError
 	}
 
-	return string(configBytes), nil
+	polishConfig := polish.DarkStarPolishClientConfig{
+		ServerAddress: clientJsonConfig.ServerAddress,
+		ServerPublicKey: clientJsonConfig.Polish.ServerPublicKey,
+	}
+
+	clientConfig := ClientConfig {
+		ServerAddress: clientJsonConfig.ServerAddress,
+		Toneburst: clientJsonConfig.Toneburst,
+		Polish: polishConfig,
+		Transport: clientJsonConfig.Transport,
+	}
+
+	return &clientConfig, nil
+}
+
+func UnmarshalServerConfig(data []byte) (*ServerConfig, error) {
+	var serverJsonConfig ServerJsonConfig
+	unmarshalError := json.Unmarshal(data, &serverJsonConfig)
+	if unmarshalError != nil {
+		return nil, unmarshalError
+	}
+
+	polishConfig := polish.DarkStarPolishServerConfig{
+		ServerAddress: serverJsonConfig.ServerAddress,
+		ServerPrivateKey: serverJsonConfig.Polish.ServerPrivateKey,
+	}
+
+	serverConfig := ServerConfig {
+		ServerAddress: serverJsonConfig.ServerAddress,
+		Toneburst: serverJsonConfig.Toneburst,
+		Polish: polishConfig,
+		Transport: serverJsonConfig.Transport,
+	}
+
+	return &serverConfig, nil
 }

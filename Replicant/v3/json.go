@@ -6,14 +6,14 @@ import (
 
 type ClientJsonConfig struct {
 	ServerAddress string    				     `json:"serverAddress"`
-	Toneburst     toneburst.Config    		     `json:"toneburst"`    
+	Toneburst     toneburst.StarburstConfig      `json:"toneburst"`    
 	Polish        DarkStarPolishClientJsonConfig `json:"polish"`       
 	Transport     string    		 			 `json:"transport"`
 }
 
 type ServerJsonConfig struct {
 	ServerAddress string    				     `json:"serverAddress"`
-	Toneburst     toneburst.Config   			 `json:"toneburst"`    
+	Toneburst     toneburst.StarburstConfig		 `json:"toneburst"`    
 	Polish        DarkStarPolishServerJsonConfig `json:"polish"`       
 	Transport     string    		  			 `json:"transport"`
 }

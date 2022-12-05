@@ -70,9 +70,14 @@ func (config ServerConfig) Marshal() (string, error) {
 		return "", errors.New("polish config was not a DarkStar polish config")
 	}
 
+	toneburstConfig, ok := config.Toneburst.(toneburst.StarburstConfig)
+	if !ok {
+		return "", errors.New("toneburst config was not a Starburst config")
+	}
+
 	jsonConfig := ServerJsonConfig {
 		ServerAddress: config.ServerAddress,
-		Toneburst: config.Toneburst,
+		Toneburst: toneburstConfig,
 		Polish: DarkStarPolishServerJsonConfig{ServerPrivateKey: polishConfig.ServerPrivateKey},
 		Transport: config.Transport,
 	}
@@ -91,9 +96,14 @@ func (config ClientConfig) Marshal() (string, error) {
 		return "", errors.New("polish config was not a DarkStar polish config")
 	}
 
+	toneburstConfig, ok := config.Toneburst.(toneburst.StarburstConfig)
+	if !ok {
+		return "", errors.New("toneburst config was not a Starburst config")
+	}
+
 	jsonConfig := ClientJsonConfig {
 		ServerAddress: config.ServerAddress,
-		Toneburst: config.Toneburst,
+		Toneburst: toneburstConfig,
 		Polish: DarkStarPolishClientJsonConfig{ServerPublicKey: polishConfig.ServerPublicKey},
 		Transport: config.Transport,
 	}

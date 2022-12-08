@@ -12,22 +12,22 @@ func TestDarkStarPolish(t *testing.T) {
 	serverPrivateKeyString := "RaHouPFVOazVSqInoMm8BSO9o/7J493y4cUVofmwXAU="
 
 	polishServerConfig := polish.DarkStarPolishServerConfig{
-		ServerAddress: "127.0.0.1:2345",
+		ServerAddress:    "127.0.0.1:2345",
 		ServerPrivateKey: serverPrivateKeyString,
 	}
 
 	serverPublicKeyString := "6LukZ8KqZLQ7eOdaTVFkBVqMA8NS1AUxwqG17L/kHnQ="
 
 	polishClientConfig := polish.DarkStarPolishClientConfig{
-		ServerAddress: "127.0.0.1:2345",
+		ServerAddress:   "127.0.0.1:2345",
 		ServerPublicKey: serverPublicKeyString,
 	}
 
 	serverConfig := ServerConfig{
 		ServerAddress: "127.0.0.1:2345",
-		Toneburst: nil,
-		Polish:    polishServerConfig,
-		Transport: "replicant",
+		Toneburst:     nil,
+		Polish:        polishServerConfig,
+		Transport:     "Replicant",
 	}
 
 	listener, listenError := serverConfig.Listen()
@@ -75,9 +75,9 @@ func TestDarkStarPolish(t *testing.T) {
 
 	clientConfig := ClientConfig{
 		ServerAddress: "127.0.0.1:2345",
-		Toneburst: nil,
-		Polish:    polishClientConfig,
-		Transport: "replicant",
+		Toneburst:     nil,
+		Polish:        polishClientConfig,
+		Transport:     "Replicant",
 	}
 
 	clientConn, clientConnError := clientConfig.Dial()
@@ -115,9 +115,9 @@ func TestStarburstToneburst(t *testing.T) {
 
 	serverConfig := ServerConfig{
 		ServerAddress: "127.0.0.1:2345",
-		Toneburst: toneburstServerConfig,
-		Polish:    nil,
-		Transport: "replicant",
+		Toneburst:     toneburstServerConfig,
+		Polish:        nil,
+		Transport:     "Replicant",
 	}
 
 	listener, listenError := serverConfig.Listen()
@@ -169,9 +169,9 @@ func TestStarburstToneburst(t *testing.T) {
 
 	clientConfig := ClientConfig{
 		ServerAddress: "127.0.0.1:2345",
-		Toneburst: toneburstClientConfig,
-		Polish:    nil,
-		Transport: "replicant",
+		Toneburst:     toneburstClientConfig,
+		Polish:        nil,
+		Transport:     "Replicant",
 	}
 
 	clientConn, clientConnError := clientConfig.Dial()
@@ -206,14 +206,14 @@ func TestStarburstToneburstDarkStarPolish(t *testing.T) {
 	serverPrivateKeyString := "RaHouPFVOazVSqInoMm8BSO9o/7J493y4cUVofmwXAU="
 
 	polishServerConfig := polish.DarkStarPolishServerConfig{
-		ServerAddress: "127.0.0.1:2345",
+		ServerAddress:    "127.0.0.1:2345",
 		ServerPrivateKey: serverPrivateKeyString,
 	}
 
 	serverPublicKeyString := "6LukZ8KqZLQ7eOdaTVFkBVqMA8NS1AUxwqG17L/kHnQ="
 
 	polishClientConfig := polish.DarkStarPolishClientConfig{
-		ServerAddress: "127.0.0.1:2345",
+		ServerAddress:   "127.0.0.1:2345",
 		ServerPublicKey: serverPublicKeyString,
 	}
 
@@ -223,9 +223,9 @@ func TestStarburstToneburstDarkStarPolish(t *testing.T) {
 
 	serverConfig := ServerConfig{
 		ServerAddress: "127.0.0.1:2345",
-		Toneburst: toneburstServerConfig,
-		Polish:    polishServerConfig,
-		Transport: "replicant",
+		Toneburst:     toneburstServerConfig,
+		Polish:        polishServerConfig,
+		Transport:     "Replicant",
 	}
 
 	listener, listenError := serverConfig.Listen()
@@ -277,9 +277,9 @@ func TestStarburstToneburstDarkStarPolish(t *testing.T) {
 
 	clientConfig := ClientConfig{
 		ServerAddress: "127.0.0.1:2345",
-		Toneburst: toneburstClientConfig,
-		Polish:    polishClientConfig,
-		Transport: "replicant",
+		Toneburst:     toneburstClientConfig,
+		Polish:        polishClientConfig,
+		Transport:     "Replicant",
 	}
 
 	clientConn, clientConnError := clientConfig.Dial()

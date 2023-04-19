@@ -1,8 +1,12 @@
 package replicant
 
 import (
+	"crypto/tls"
+	"encoding/base64"
 	"fmt"
 	"math/rand"
+	"net"
+	"net/smtp"
 	"os"
 	"strconv"
 	"testing"
@@ -60,6 +64,84 @@ func TestConfigNew(t *testing.T) {
 	}
 
 	fmt.Println(jsonString)
+}
+
+// Test an SMTP client connection that is not a valid replicant connection
+func TestSMTPConnection(t *testing.T) {
+
+	toneburstServerConfig := toneburst.StarburstConfig{
+		Mode: "SMTPServer",
+	}
+
+	serverPrivateKeyString := "RaHouPFVOazVSqInoMm8BSO9o/7J493y4cUVofmwXAU="
+
+	polishServerConfig := polish.DarkStarPolishServerConfig{
+		ServerAddress:    "127.0.0.1:2525",
+		ServerPrivateKey: serverPrivateKeyString,
+	}
+
+	serverConfig := ServerConfig{
+		ServerAddress: "127.0.0.1:2525",
+		Toneburst:     toneburstServerConfig,
+		Polish:        polishServerConfig,
+		Transport:     "Replicant",
+	}
+
+	go func() {
+		if err := listenAndServe(serverConfig); err != nil {
+			fmt.Println("serve error: ", err)
+		}
+	}()
+
+	c, err := smtp.Dial("127.0.0.1:2525")
+	if err != nil {
+		fmt.Println("SMTP Dial error")
+		panic(err)
+	}
+	defer c.Close()
+
+	if err := c.StartTLS(&tls.Config{InsecureSkipVerify: true}); err != nil {
+		fmt.Println("StartTLS error: ", err)
+		//panic(err)
+	}
+}
+
+func listenAndServe(serverConfig ServerConfig) error {
+	l, err := serverConfig.Listen()
+	if err != nil {
+		fmt.Println("Server listen error")
+		panic(err)
+	}
+	defer l.Close()
+
+	acceptErr := make(chan error)
+	go func() {
+		for {
+			conn, err := l.Accept()
+
+			fmt.Println("Accepted a connection!")
+			if err != nil {
+				acceptErr <- err
+				fmt.Println("Listener accept error: ", err)
+				return
+			}
+
+			go func(c net.Conn) {
+				defer c.Close()
+
+				buf := make([]byte, 1024)
+				n, err := conn.Read(buf)
+				if err != nil {
+					fmt.Println("read error: ", err)
+					return
+				}
+
+				fmt.Println("from client: ", base64.StdEncoding.EncodeToString(buf[:n]))
+			}(conn)
+		}
+	}()
+
+	return <-acceptErr
 }
 
 func runReplicantServer() {

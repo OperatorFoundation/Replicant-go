@@ -16,6 +16,7 @@ type ServerJsonConfig struct {
 	Toneburst     toneburst.StarburstConfig		 `json:"toneburst"`    
 	Polish        DarkStarPolishServerJsonConfig `json:"polish"`       
 	Transport     string    		  			 `json:"transport"`
+	BindAddress	  *string						 `json:"bindAddress"`
 }
 
 type DarkStarPolishServerJsonConfig struct {

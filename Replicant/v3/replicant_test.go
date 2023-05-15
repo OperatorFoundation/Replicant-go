@@ -46,16 +46,17 @@ func TestConfigNew(t *testing.T) {
 
 	serverPrivateKeyString := "RaHouPFVOazVSqInoMm8BSO9o/7J493y4cUVofmwXAU="
 
-	polishServerConfig := polish.DarkStarPolishClientConfig{
+	polishServerConfig := polish.DarkStarPolishServerConfig{
 		ServerAddress:   "127.0.0.1:1234",
-		ServerPublicKey: serverPrivateKeyString,
+		ServerPrivateKey: serverPrivateKeyString,
 	}
 
-	serverConfig := ClientConfig{
+	serverConfig := ServerConfig{
 		ServerAddress: "127.0.0.1:1234",
 		Toneburst:     toneburstServerConfig,
 		Polish:        polishServerConfig,
 		Transport:     "Replicant",
+		BindAddress:   nil,
 	}
 
 	jsonString, marshalError := serverConfig.ToJsonString()
@@ -85,6 +86,7 @@ func TestSMTPConnection(t *testing.T) {
 		Toneburst:     toneburstServerConfig,
 		Polish:        polishServerConfig,
 		Transport:     "Replicant",
+		BindAddress:   nil,
 	}
 
 	go func() {
@@ -151,6 +153,7 @@ func runReplicantServer() {
 		Toneburst:     nil,
 		Polish:        nil,
 		Transport:     "Replicant",
+		BindAddress:   nil,
 	}
 
 	go func() {
@@ -189,6 +192,7 @@ func runReplicantFactoryServer() {
 		Toneburst:     nil,
 		Polish:        nil,
 		Transport:     "Replicant",
+		BindAddress:   nil,
 	}
 
 	server := NewServer(serverConfig, proxy.Direct)

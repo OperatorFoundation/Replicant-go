@@ -44,6 +44,7 @@ type ServerConfig struct {
 	Toneburst     toneburst.Config    `json:"toneburst"`    
 	Polish        polish.ServerConfig `json:"polish"`       
 	Transport     string    		  `json:"transport"`
+	BindAddress	  *string			  `json:"bindAddress"`
 }
 
 func (config ServerConfig) ToJsonString() (string, error) {
@@ -155,6 +156,7 @@ func UnmarshalServerConfig(data []byte) (*ServerConfig, error) {
 		Toneburst: serverJsonConfig.Toneburst,
 		Polish: polishConfig,
 		Transport: serverJsonConfig.Transport,
+		BindAddress: serverJsonConfig.BindAddress,
 	}
 
 	return &serverConfig, nil

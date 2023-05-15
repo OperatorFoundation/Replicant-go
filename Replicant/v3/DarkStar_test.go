@@ -28,6 +28,7 @@ func TestDarkStarPolish(t *testing.T) {
 		Toneburst:     nil,
 		Polish:        polishServerConfig,
 		Transport:     "Replicant",
+		BindAddress:   nil,
 	}
 
 	listener, listenError := serverConfig.Listen()
@@ -118,6 +119,7 @@ func TestStarburstToneburst(t *testing.T) {
 		Toneburst:     toneburstServerConfig,
 		Polish:        nil,
 		Transport:     "Replicant",
+		BindAddress:   nil,
 	}
 
 	listener, listenError := serverConfig.Listen()
@@ -226,6 +228,7 @@ func TestStarburstToneburstDarkStarPolish(t *testing.T) {
 		Toneburst:     toneburstServerConfig,
 		Polish:        polishServerConfig,
 		Transport:     "Replicant",
+		BindAddress:   nil,
 	}
 
 	listener, listenError := serverConfig.Listen()

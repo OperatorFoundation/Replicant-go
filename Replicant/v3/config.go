@@ -79,7 +79,7 @@ func (config ServerConfig) Marshal() (string, error) {
 	jsonConfig := ServerJsonConfig {
 		ServerAddress: config.ServerAddress,
 		Toneburst: toneburstConfig,
-		Polish: DarkStarPolishServerJsonConfig{ServerPrivateKey: polishConfig.ServerPrivateKey},
+		Polish: DarkStarPolishServerJsonConfig{ServerAddress: polishConfig.ServerAddress , ServerPrivateKey: polishConfig.ServerPrivateKey},
 		Transport: config.Transport,
 	}
 
@@ -105,7 +105,7 @@ func (config ClientConfig) Marshal() (string, error) {
 	jsonConfig := ClientJsonConfig {
 		ServerAddress: config.ServerAddress,
 		Toneburst: toneburstConfig,
-		Polish: DarkStarPolishClientJsonConfig{ServerPublicKey: polishConfig.ServerPublicKey},
+		Polish: DarkStarPolishClientJsonConfig{ServerAddress: polishConfig.ServerAddress, ServerPublicKey: polishConfig.ServerPublicKey},
 		Transport: config.Transport,
 	}
 

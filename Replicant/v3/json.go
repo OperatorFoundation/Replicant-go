@@ -20,9 +20,11 @@ type ServerJsonConfig struct {
 }
 
 type DarkStarPolishServerJsonConfig struct {
+	ServerAddress    string `json:"serverAddress"`
 	ServerPrivateKey string `json:"serverPrivateKey"`
 }
 
 type DarkStarPolishClientJsonConfig struct {
+	ServerAddress    string `json:"serverAddress"`
 	ServerPublicKey string `json:"serverPublicKey"`
 }

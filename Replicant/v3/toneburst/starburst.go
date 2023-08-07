@@ -10,6 +10,7 @@ import (
 )
 
 type StarburstConfig struct {
+	Type string `json:"type"` 
 	Mode string `json:"mode"`
 }
 

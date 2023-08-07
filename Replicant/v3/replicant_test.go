@@ -41,6 +41,7 @@ func TestEmptyConfigs(t *testing.T) {
 func TestConfigNew(t *testing.T) {
 
 	toneburstServerConfig := toneburst.StarburstConfig{
+		Type: "Starburst",
 		Mode: "SMTPServer",
 	}
 
@@ -71,6 +72,7 @@ func TestConfigNew(t *testing.T) {
 func TestSMTPConnection(t *testing.T) {
 
 	toneburstServerConfig := toneburst.StarburstConfig{
+		Type: "Starburst",
 		Mode: "SMTPServer",
 	}
 

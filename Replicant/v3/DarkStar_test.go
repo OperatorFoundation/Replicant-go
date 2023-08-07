@@ -111,6 +111,7 @@ func TestDarkStarPolish(t *testing.T) {
 
 func TestStarburstToneburst(t *testing.T) {
 	toneburstServerConfig := toneburst.StarburstConfig{
+		Type: "Starburst",
 		Mode: "SMTPServer",
 	}
 
@@ -166,6 +167,7 @@ func TestStarburstToneburst(t *testing.T) {
 	}()
 
 	toneburstClientConfig := toneburst.StarburstConfig{
+		Type: "Starburst",
 		Mode: "SMTPClient",
 	}
 
@@ -220,6 +222,7 @@ func TestStarburstToneburstDarkStarPolish(t *testing.T) {
 	}
 
 	toneburstServerConfig := toneburst.StarburstConfig{
+		Type: "Starburst",
 		Mode: "SMTPServer",
 	}
 
@@ -275,6 +278,7 @@ func TestStarburstToneburstDarkStarPolish(t *testing.T) {
 	}()
 
 	toneburstClientConfig := toneburst.StarburstConfig{
+		Type: "Starburst",
 		Mode: "SMTPClient",
 	}
 

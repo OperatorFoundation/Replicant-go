@@ -25,6 +25,7 @@
 package replicant
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 
@@ -124,6 +125,13 @@ func UnmarshalClientConfig(data []byte) (*ClientConfig, error) {
 		return nil, unmarshalError
 	}
 
+	publicKeyBytes, decodeError := base64.StdEncoding.DecodeString(clientJsonConfig.Polish.ServerPublicKey)
+	if decodeError != nil {
+		return nil, errors.New("private key bytes were not base64 compatible")
+	}
+	trimmedPublicKeyBytes := publicKeyBytes[1:]
+	clientJsonConfig.Polish.ServerPublicKey = base64.StdEncoding.EncodeToString(trimmedPublicKeyBytes)
+
 	polishConfig := polish.DarkStarPolishClientConfig{
 		ServerAddress: clientJsonConfig.ServerAddress,
 		ServerPublicKey: clientJsonConfig.Polish.ServerPublicKey,
@@ -145,6 +153,13 @@ func UnmarshalServerConfig(data []byte) (*ServerConfig, error) {
 	if unmarshalError != nil {
 		return nil, unmarshalError
 	}
+
+	privateKeyBytes, decodeError := base64.StdEncoding.DecodeString(serverJsonConfig.Polish.ServerPrivateKey)
+	if decodeError != nil {
+		return nil, errors.New("private key bytes were not base64 compatible")
+	}
+	trimmedPrivateKeyBytes := privateKeyBytes[1:]
+	serverJsonConfig.Polish.ServerPrivateKey = base64.StdEncoding.EncodeToString(trimmedPrivateKeyBytes)
 
 	polishConfig := polish.DarkStarPolishServerConfig{
 		ServerAddress: serverJsonConfig.ServerAddress,

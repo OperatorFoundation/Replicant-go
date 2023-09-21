@@ -90,7 +90,7 @@ func NewDarkStarPolishClientConfigFromPrivate(serverPrivateKey crypto.PrivateKey
 	serverPublicKey := keyExchange.PublicKey(serverPrivateKey)
 	fmt.Print("server publicKey: ")
 	fmt.Println(serverPublicKey)
-	publicKeyBytes, keyError := darkstar.PublicKeyToBytes(serverPublicKey)
+	publicKeyBytes, keyError := darkstar.PublicKeyToKeychainFormatBytes(serverPublicKey)
 	if keyError != nil {
 		return nil, keyError
 	}
